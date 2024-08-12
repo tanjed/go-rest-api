@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+    db:
+        image: mysql:8
+        container_name: db
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mysql/data:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: go_db
+            MYSQL_USER: go_user
+            MYSQL_PASSWORD: go_password
+        networks:
+            - go
+networks:
+    go:
+        name: go
+        driver: bridge
+
+
