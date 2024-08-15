@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,73 +13,73 @@ const dbPassword = "go_password"
 const dbHost = "127.0.0.1"
 const dbPort = "3306"
 
-var db *sql.DB
+var DB *sql.DB
 
-func initDB() {
-	fmt.Println(db)
+func InitDB() {
+
 	var err error
-	db, err = sql.Open("mysql", getConnectionString())
+	DB, err = sql.Open("mysql", getConnectionString())
 	if err != nil {
 		panic(err)
 	}
 
-	if err = db.Ping(); err != nil {
+	if err = DB.Ping(); err != nil {
 		panic(err)
 	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
+	DB.SetConnMaxLifetime(time.Minute * 3)
+	DB.SetMaxOpenConns(10)
+	DB.SetMaxIdleConns(10)
 }
 
 func getConnectionString() string {
 	return dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
 }
 
-func Get(query string) map[string]interface{} {
-	initDB()
-	rows, err := db.Query(query)
-	if err != nil {
-		panic(err)
-	}
+// func Get(query string) map[string]interface{} {
+// 	initDB()
+// 	rows, err := db.Query(query)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	defer rows.Close()
-	defer db.Close()
+// 	defer rows.Close()
+// 	defer db.Close()
 
-	columns, err := rows.Columns() // Get the column names
-	if err != nil {
-		panic(err)
-	}
+// 	columns, err := rows.Columns() // Get the column names
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	columnCount := len(columns)
-	values := make([]interface{}, columnCount)
-	valuePtrs := make([]interface{}, columnCount)
+// 	columnCount := len(columns)
+// 	values := make([]interface{}, columnCount)
+// 	valuePtrs := make([]interface{}, columnCount)
 
-	for i := range valuePtrs {
-		valuePtrs[i] = &values[i]
-	}
+// 	for i := range valuePtrs {
+// 		valuePtrs[i] = &values[i]
+// 	}
 
-	result := make(map[string]interface{})
-	for rows.Next() {
+// 	result := make(map[string]interface{})
+// 	for rows.Next() {
 
-		if err := rows.Scan(valuePtrs...); err != nil {
-			panic(err)
-		}
+// 		if err := rows.Scan(valuePtrs...); err != nil {
+// 			panic(err)
+// 		}
 
-	}
+// 	}
 
-	for index, columnName := range columns {
-		if value, isBtye := values[index].([]byte); isBtye {
-			result[columnName] = string(value)
-		} else {
-			result[columnName] = values[index]
-		}
+// 	for index, columnName := range columns {
+// 		if value, isBtye := values[index].([]byte); isBtye {
+// 			result[columnName] = string(value)
+// 		} else {
+// 			result[columnName] = values[index]
+// 		}
 
-	}
+// 	}
 
-	if err := rows.Err(); err != nil {
-		panic(err)
-	}
+// 	if err := rows.Err(); err != nil {
+// 		panic(err)
+// 	}
 
-	return result
+// 	return result
 
-}
+// }
